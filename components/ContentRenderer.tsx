@@ -1,8 +1,68 @@
 
-import React from 'react';
-import { Section, ContentItem, ContentItemType, DefinitionGroup, TextBlock, ListItem, HtmlExample, HtmlTableExample, TaskGroup, MemorizeVerse, SubHeading, QuestionAnswerItem, ImageItem } from '../types';
+import React, { useState } from 'react';
+import { Section, ContentItem, ContentItemType, Definition, DefinitionGroup, TextBlock, ListItem, HtmlExample, HtmlTableExample, TaskGroup, MemorizeVerse, SubHeading, QuestionAnswerItem, ImageItem } from '../types';
 
 const ExternalLinkIcon = () => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4 ml-1 inline-block"><path d="M6.22 8.72a.75.75 0 0 0 1.06 1.06l5.22-5.22v1.69a.75.75 0 0 0 1.5 0v-3.5a.75.75 0 0 0-.75-.75h-3.5a.75.75 0 0 0 0 1.5h1.69L6.22 8.72Z" /><path d="M3.5 6.75c0-.69.56-1.25 1.25-1.25H7A.75.75 0 0 0 7 4H4.75A2.75 2.75 0 0 0 2 6.75v4.5A2.75 2.75 0 0 0 4.75 14h4.5A2.75 2.75 0 0 0 12 11.25V9a.75.75 0 0 0-1.5 0v2.25c0 .69-.56 1.25-1.25 1.25h-4.5c-.69 0-1.25-.56-1.25-1.25v-4.5Z" /></svg>;
+const ChevronDownIcon = () => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 transition-transform duration-300"><path fillRule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clipRule="evenodd" /></svg>;
+const ChevronUpIcon = () => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 transition-transform duration-300"><path fillRule="evenodd" d="M14.78 11.78a.75.75 0 01-1.06 0L10 8.06l-3.72 3.72a.75.75 0 11-1.06-1.06l4.25-4.25a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06z" clipRule="evenodd" /></svg>;
+
+
+const DefinitionItemDisplay: React.FC<{ def: Definition, id: string }> = ({ def, id }) => {
+  const [isRevealed, setIsRevealed] = useState(false);
+
+  return (
+    <div className="p-3 bg-sky-50 rounded-md border border-sky-200">
+      <div 
+        className="flex justify-between items-center cursor-pointer group" 
+        onClick={() => setIsRevealed(!isRevealed)}
+        aria-expanded={isRevealed}
+        aria-controls={`content-${id}`}
+      >
+        <h5 className="font-semibold text-sky-800 group-hover:text-sky-600 transition-colors">{def.term}</h5>
+        {isRevealed ? <ChevronUpIcon /> : <ChevronDownIcon />}
+      </div>
+      <div 
+        id={`content-${id}`}
+        className={`transition-all duration-300 ease-in-out overflow-hidden ${isRevealed ? 'max-h-96 opacity-100 mt-2' : 'max-h-0 opacity-0'}`}
+      >
+        <p className="text-sm text-slate-700 pt-1">{def.description}</p>
+        {def.example && <p className="text-xs text-slate-500 mt-1 italic">Ej: {def.example}</p>}
+      </div>
+    </div>
+  );
+};
+
+const QuestionAnswerItemDisplay: React.FC<{ qaItem: QuestionAnswerItem, id: string, level: number }> = ({ qaItem, id, level }) => {
+  const [isRevealed, setIsRevealed] = useState(false);
+
+  return (
+    <div className={`py-2 ${level > 0 ? 'ml-4 pl-4 border-l border-slate-200' : ''}`}>
+      <div 
+        className="flex justify-between items-center cursor-pointer group" 
+        onClick={() => setIsRevealed(!isRevealed)}
+        aria-expanded={isRevealed}
+        aria-controls={`content-${id}`}
+      >
+        <h5 className={`font-semibold group-hover:text-sky-600 transition-colors ${level > 0 ? 'text-md' : 'text-lg'} text-sky-800`}>{qaItem.question}</h5>
+        {isRevealed ? <ChevronUpIcon /> : <ChevronDownIcon />}
+      </div>
+      <div
+        id={`content-${id}`}
+        className={`transition-all duration-300 ease-in-out overflow-hidden ${isRevealed ? 'max-h-screen opacity-100 mt-1' : 'max-h-0 opacity-0'}`} // max-h-screen for potentially longer answers
+      >
+        <p className="text-sm text-slate-700 mt-1 whitespace-pre-line pt-1">{qaItem.answer}</p>
+        {qaItem.subItems && qaItem.subItems.length > 0 && (
+          <div className="mt-2">
+            {qaItem.subItems.map((subItem, index) => (
+              <QuestionAnswerItemDisplay key={`${id}-sub-${index}`} qaItem={subItem} id={`${id}-sub-${index}`} level={level + 1} />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 
 const ContentItemDisplay: React.FC<{ item: ContentItem }> = ({ item }) => {
   switch (item.type) {
@@ -12,11 +72,7 @@ const ContentItemDisplay: React.FC<{ item: ContentItem }> = ({ item }) => {
         <div className="space-y-3">
           {item.title && <h4 className="text-lg font-semibold text-sky-700 mt-4 mb-2">{item.title}</h4>}
           {defGroup.items.map((def, index) => (
-            <div key={`${item.id}-def-${index}`} className="p-3 bg-sky-50 rounded-md border border-sky-200">
-              <h5 className="font-semibold text-sky-800">{def.term}</h5>
-              <p className="text-sm text-slate-700 mt-1">{def.description}</p>
-              {def.example && <p className="text-xs text-slate-500 mt-1 italic">Ej: {def.example}</p>}
-            </div>
+            <DefinitionItemDisplay key={`${item.id}-def-${index}`} def={def} id={`${item.id}-def-${index}`} />
           ))}
         </div>
       );
@@ -57,13 +113,16 @@ const ContentItemDisplay: React.FC<{ item: ContentItem }> = ({ item }) => {
           <pre className="bg-slate-900 text-white p-3 rounded-md text-xs overflow-x-auto custom-scrollbar">
             <code>{htmlExample.code}</code>
           </pre>
-          {htmlExample.explanation && <p className="text-sm text-slate-600 mt-3">{htmlExample.explanation}</p>}
-          {htmlExample.renderedImageUrl && (
-            <div className="mt-3">
-              <h6 className="text-sm font-semibold text-slate-600 mb-1">Ejemplo Visual (Placeholder):</h6>
-              <img src={htmlExample.renderedImageUrl} alt={htmlExample.title || "Rendered HTML Example"} className="border border-slate-300 rounded"/>
-            </div>
-          )}
+          {htmlExample.explanation && <p className="text-sm text-slate-600 mt-3 mb-3">{htmlExample.explanation}</p>}
+          <div className="mt-3">
+            <h6 className="text-sm font-semibold text-slate-600 mb-1">Resultado en vivo:</h6>
+            <iframe
+              srcDoc={htmlExample.code}
+              title={htmlExample.title || "Resultado del ejemplo HTML"}
+              className="w-full h-72 border border-slate-400 rounded bg-white"
+              sandbox="allow-scripts allow-popups allow-forms" // Allows scripts for dynamic examples, and forms/popups if needed by example code.
+            />
+          </div>
         </div>
       );
     case ContentItemType.TASK_GROUP:
@@ -112,19 +171,12 @@ const ContentItemDisplay: React.FC<{ item: ContentItem }> = ({ item }) => {
         return <h3 className="text-xl font-semibold text-sky-700 mt-6 mb-3 border-b border-sky-200 pb-1">{subHeading.text}</h3>;
     case ContentItemType.QUESTION_ANSWER:
         const qaContent = item.content as { items: QuestionAnswerItem[] };
-        const renderQaItems = (items: QuestionAnswerItem[], level: number = 0) => (
-             items.map((qaItem, index) => (
-                <div key={`${item.id}-qa-${index}`} className={`py-2 ${level > 0 ? 'ml-4 pl-4 border-l border-slate-200' : ''}`}>
-                    <h5 className={`font-semibold ${level > 0 ? 'text-md' : 'text-lg'} text-sky-800`}>{qaItem.question}</h5>
-                    <p className="text-sm text-slate-700 mt-1 whitespace-pre-line">{qaItem.answer}</p>
-                    {qaItem.subItems && qaItem.subItems.length > 0 && renderQaItems(qaItem.subItems, level + 1)}
-                </div>
-            ))
-        );
         return (
-            <div className="my-3 space-y-3">
+            <div className="my-3 space-y-1">
                 {item.title && <h4 className="text-lg font-semibold text-sky-700 mb-2">{item.title}</h4>}
-                {renderQaItems(qaContent.items)}
+                {qaContent.items.map((qaItem, index) => (
+                    <QuestionAnswerItemDisplay key={`${item.id}-qa-${index}`} qaItem={qaItem} id={`${item.id}-qa-${index}`} level={0} />
+                ))}
             </div>
         );
     case ContentItemType.IMAGE:

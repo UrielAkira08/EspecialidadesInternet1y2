@@ -376,8 +376,7 @@ export const SPECIALIZATIONS_DATA: Specialization[] = [
     </table>
   </body>
 </html>`,
-              explanation: "Este código HTML demuestra etiquetas básicas como encabezados, párrafos, negrita, cursiva, enlaces, imágenes, líneas horizontales y tablas. La imagen es un placeholder.",
-              renderedImageUrl: "https://picsum.photos/seed/html_example_render/600/400"
+              explanation: "Este código HTML demuestra etiquetas básicas como encabezados, párrafos, negrita, cursiva, enlaces, imágenes, líneas horizontales y tablas. La imagen es un placeholder."
             }
           }
         ]
@@ -411,8 +410,7 @@ export const SPECIALIZATIONS_DATA: Specialization[] = [
     <img src="https://picsum.photos/seed/foto_table/200/150" width="200" alt="Foto Placeholder">
   </body>
 </html>`,
-              explanation: "Este ejemplo muestra una tabla HTML con estilos en línea para colores de fondo, texto y fuente. También incluye un encabezado, una línea horizontal, un párrafo con un enlace y una imagen. La imagen es un placeholder.",
-              renderedImageUrl: "https://picsum.photos/seed/html_table_render/600/300"
+              explanation: "Este ejemplo muestra una tabla HTML con estilos en línea para colores de fondo, texto y fuente. También incluye un encabezado, una línea horizontal, un párrafo con un enlace y una imagen. La imagen es un placeholder."
             }
           }
         ]

@@ -43,14 +43,12 @@ export interface HtmlExample {
   title?: string;
   code: string;
   explanation?: string;
-  renderedImageUrl?: string; // e.g., https://picsum.photos/seed/html_example/600/400
 }
 
 export interface HtmlTableExample {
   title?: string;
   code: string;
   explanation?: string;
-  renderedImageUrl?: string;
 }
 
 export interface Task {
